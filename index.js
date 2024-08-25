@@ -8,8 +8,7 @@ require("dotenv").config();
 
 app.use(cors());
 app.use(express.json());
-//AssignmentFinal
-//i4Vq8UtTZaVzle9u
+
 console.log(process.env.MONGO_USER_NAME);
 const uri = `mongodb+srv://${process.env.MONGO_USER_NAME}:${process.env.MONGO_PASSWORD}@cluster0.ymyoldm.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
