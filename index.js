@@ -23,13 +23,32 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
-    const coffeeCollection = client.db("FinalAssignment").collection("donor");
+    const donorCollection = client.db("FinalAssignment").collection("donor");
 
     //sending on server
     app.post("/donor", async (req, res) => {
       const newDonor = req.body;
       console.log(newDonor);
-      const result = await coffeeCollection.insertOne(newDonor);
+      const result = await donorCollection.insertOne(newDonor);
+      res.send(result);
+    });
+
+    //for reading from mongodb
+
+    app.get("/donor", async (req, res) => {
+      let query = {};
+      if (req.query?.district) {
+        query = { district: req.query.district };
+      }
+      if (req.query?.upazilla) {
+        query.upazilla = req.query.upazilla;
+      }
+      if (req.query?.blood) {
+        query.blood = req.query.blood;
+      }
+
+      const cursor = donorCollection.find(query);
+      const result = await cursor.toArray();
       res.send(result);
     });
 
