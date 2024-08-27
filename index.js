@@ -100,7 +100,13 @@ async function run() {
     //for reading from mongodb
 
     app.get("/requestDonor", async (req, res) => {
-      const cursor = donorRequestCollection.find();
+      let query = {};
+
+      if (req.query?.requesterEmail) {
+        query.requesterEmail = req.query.requesterEmail;
+      }
+
+      const cursor = donorRequestCollection.find(query);
       const result = await cursor.toArray();
       res.send(result);
     });
