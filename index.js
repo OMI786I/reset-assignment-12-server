@@ -25,6 +25,7 @@ async function run() {
   try {
     const donorCollection = client.db("FinalAssignment").collection("donor");
 
+    //donor related apis
     //sending on server
     app.post("/donor", async (req, res) => {
       const newDonor = req.body;
@@ -75,12 +76,33 @@ async function run() {
           image: updatedDonor.image,
           district: updatedDonor.district,
           upazilla: updatedDonor.upazilla,
+          blood: updatedDonor.blood,
         },
       };
-
       const result = await donorCollection.updateOne(filter, donor, options);
       res.send(result);
       console.log(result);
+    });
+
+    const donorRequestCollection = client
+      .db("FinalAssignment")
+      .collection("requestDonor");
+
+    //collection related apis
+    //sending on server
+    app.post("/requestDonor", async (req, res) => {
+      const newDonor = req.body;
+      console.log(newDonor);
+      const result = await donorRequestCollection.insertOne(newDonor);
+      res.send(result);
+    });
+
+    //for reading from mongodb
+
+    app.get("/requestDonor", async (req, res) => {
+      const cursor = donorRequestCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
     });
 
     // Connect the client to the server	(optional starting in v4.7)
