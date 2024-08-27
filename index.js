@@ -2,7 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 const port = process.env.PORT || 5000;
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 require("dotenv").config();
 // middleware
 
@@ -46,10 +46,41 @@ async function run() {
       if (req.query?.blood) {
         query.blood = req.query.blood;
       }
+      if (req.query?.email) {
+        query.email = req.query.email;
+      }
 
       const cursor = donorCollection.find(query);
       const result = await cursor.toArray();
       res.send(result);
+    });
+    app.get("/donor/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await donorCollection.findOne(query);
+      res.send(result);
+    });
+
+    //updating data of mongodb data
+
+    app.put("/donor/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const updatedDonor = req.body;
+
+      const donor = {
+        $set: {
+          name: updatedDonor.name,
+          image: updatedDonor.image,
+          district: updatedDonor.district,
+          upazilla: updatedDonor.upazilla,
+        },
+      };
+
+      const result = await donorCollection.updateOne(filter, donor, options);
+      res.send(result);
+      console.log(result);
     });
 
     // Connect the client to the server	(optional starting in v4.7)
