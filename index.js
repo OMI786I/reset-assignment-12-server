@@ -110,6 +110,41 @@ async function run() {
       const result = await cursor.toArray();
       res.send(result);
     });
+    app.get("/requestDonor/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await donorRequestCollection.findOne(query);
+      res.send(result);
+    });
+
+    //updating data of mongodb data
+
+    app.put("/requestDonor/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const updatedDonor = req.body;
+
+      const donor = {
+        $set: {
+          district: updatedDonor.district,
+          donationDate: updatedDonor.donationDate,
+          donationTime: updatedDonor.donationTime,
+          fullAddressLine: updatedDonor.fullAddressLine,
+          hospitalName: updatedDonor.hospitalName,
+          recipientName: updatedDonor.recipientName,
+          requestMessage: updatedDonor.requestMessage,
+          upazilla: updatedDonor.upazilla,
+        },
+      };
+      const result = await donorRequestCollection.updateOne(
+        filter,
+        donor,
+        options
+      );
+      res.send(result);
+      console.log(result);
+    });
 
     // Connect the client to the server	(optional starting in v4.7)
     //await client.connect();
