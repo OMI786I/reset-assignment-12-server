@@ -8,6 +8,15 @@ require("dotenv").config();
 const jwt = require("jsonwebtoken");
 app.use(cors());
 app.use(express.json());
+const verifyToken = (req, res, next) => {
+  console.log("inside verify token", req.headers);
+  //next();
+  if (!req.headers.authorization) {
+    return res.status(401).send({ message: "forbidden access" });
+  }
+
+  const token = req.headers.authorization.split(" ")[1];
+};
 
 console.log(process.env.MONGO_USER_NAME);
 const uri = `mongodb+srv://${process.env.MONGO_USER_NAME}:${process.env.MONGO_PASSWORD}@cluster0.ymyoldm.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
@@ -46,7 +55,8 @@ async function run() {
 
     //for reading from mongodb
 
-    app.get("/donor", async (req, res) => {
+    app.get("/donor", verifyToken, async (req, res) => {
+      console.log(req.headers);
       let query = {};
       if (req.query?.district) {
         query = { district: req.query.district };
