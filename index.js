@@ -165,10 +165,10 @@ async function run() {
       const id = req.params.id;
       const filter = { _id: new ObjectId(id) };
       const options = { upsert: true };
-
+      const updatedDonor = req.body;
       const donor = {
         $set: {
-          role: "admin",
+          role: updatedDonor.role,
         },
       };
       const result = await donorCollection.updateOne(filter, donor, options);
