@@ -215,6 +215,24 @@ async function run() {
       res.send({ admin });
     });
 
+    //blog related apis
+    const blogCollection = client
+      .db("FinalAssignment")
+      .collection("blogCollection");
+
+    app.post("/blog", async (req, res) => {
+      const newBlog = req.body;
+      console.log(newBlog);
+      const result = await blogCollection.insertOne(newBlog);
+      res.send(result);
+    });
+
+    app.get("/blog", async (req, res) => {
+      const cursor = blogCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
     // Connect the client to the server	(optional starting in v4.7)
     //await client.connect();
     // Send a ping to confirm a successful connection
