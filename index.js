@@ -159,6 +159,23 @@ async function run() {
       res.send(result);
     });
 
+    //admin api
+
+    app.put("/donor/admin/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+
+      const donor = {
+        $set: {
+          role: "admin",
+        },
+      };
+      const result = await donorCollection.updateOne(filter, donor, options);
+      res.send(result);
+      console.log(result);
+    });
+
     // Connect the client to the server	(optional starting in v4.7)
     //await client.connect();
     // Send a ping to confirm a successful connection
