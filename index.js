@@ -233,6 +233,34 @@ async function run() {
       res.send(result);
     });
 
+    // finding data from mongodb for updating purpose
+
+    app.get("/blog/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await blogCollection.findOne(query);
+      res.send(result);
+    });
+
+    //updating data of mongodb data
+
+    app.patch("/blog/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const updatedBlog = req.body;
+
+      const blog = {
+        $set: {
+          status: updatedBlog.status,
+        },
+      };
+
+      const result = await blogCollection.updateOne(filter, blog, options);
+      res.send(result);
+      console.log(result);
+    });
+
     // Connect the client to the server	(optional starting in v4.7)
     //await client.connect();
     // Send a ping to confirm a successful connection
