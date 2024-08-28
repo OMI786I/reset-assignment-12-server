@@ -105,8 +105,12 @@ async function run() {
       if (req.query?.requesterEmail) {
         query.requesterEmail = req.query.requesterEmail;
       }
+      let limit = parseInt(req.query.limit) || null;
 
       const cursor = donorRequestCollection.find(query);
+      if (limit) {
+        cursor.sort({ $natural: -1 }).limit(limit);
+      }
       const result = await cursor.toArray();
       res.send(result);
     });
