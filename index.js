@@ -126,7 +126,9 @@ async function run() {
 
     app.get("/requestDonor", async (req, res) => {
       let query = {};
-
+      if (req.query?.donationStatus) {
+        query = { donationStatus: req.query.donationStatus };
+      }
       if (req.query?.requesterEmail) {
         query.requesterEmail = req.query.requesterEmail;
       }
