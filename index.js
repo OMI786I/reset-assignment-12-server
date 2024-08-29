@@ -175,6 +175,30 @@ async function run() {
       console.log(result);
     });
 
+    // adding donor information
+
+    app.patch("/requestDonor/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const updatedDonor = req.body;
+
+      const donor = {
+        $set: {
+          donorName: updatedDonor.donorName,
+          donorEmail: updatedDonor.donorEmail,
+          donationStatus: updatedDonor.donationStatus,
+        },
+      };
+      const result = await donorRequestCollection.updateOne(
+        filter,
+        donor,
+        options
+      );
+      res.send(result);
+      console.log(result);
+    });
+
     //for delete
 
     app.delete("/requestDonor/:id", async (req, res) => {
