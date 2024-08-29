@@ -57,7 +57,7 @@ async function run() {
       const result = await donorCollection.insertOne(newDonor);
       res.send(result);
     });
-
+    //
     //for reading from mongodb
 
     app.get("/donor", async (req, res) => {
@@ -226,6 +226,20 @@ async function run() {
       res.send(result);
       console.log(result);
     });
+    app.patch("/donor/admin/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const updatedDonor = req.body;
+      const donor = {
+        $set: {
+          status: updatedDonor.status,
+        },
+      };
+      const result = await donorCollection.updateOne(filter, donor, options);
+      res.send(result);
+      console.log(result);
+    });
 
     app.get("/users/admin/:email", verifyToken, async (req, res) => {
       const email = req.params.email;
@@ -254,7 +268,11 @@ async function run() {
     });
 
     app.get("/blog", async (req, res) => {
-      const cursor = blogCollection.find();
+      let query = {};
+      if (req.query?.status) {
+        query = { status: req.query.status };
+      }
+      const cursor = blogCollection.find(query);
       const result = await cursor.toArray();
       res.send(result);
     });
