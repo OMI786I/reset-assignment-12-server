@@ -3,6 +3,7 @@ const cors = require("cors");
 const app = express();
 const port = process.env.PORT || 5000;
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 require("dotenv").config();
 // middleware
@@ -26,7 +27,6 @@ const verifyToken = (req, res, next) => {
   });
 };
 
-console.log(process.env.MONGO_USER_NAME);
 const uri = `mongodb+srv://${process.env.MONGO_USER_NAME}:${process.env.MONGO_PASSWORD}@cluster0.ymyoldm.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -76,6 +76,9 @@ async function run() {
       if (req.query?.email) {
         query.email = req.query.email;
       }
+      if (req.query?.donation) {
+        query.donation = parseInt(req.query.donation);
+      }
 
       const cursor = donorCollection.find(query);
       const result = await cursor.toArray();
@@ -103,6 +106,25 @@ async function run() {
           district: updatedDonor.district,
           upazilla: updatedDonor.upazilla,
           blood: updatedDonor.blood,
+        },
+      };
+      const result = await donorCollection.updateOne(filter, donor, options);
+      res.send(result);
+      console.log(result);
+    });
+
+    //updating data about donation
+
+    app.patch("/donor/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const updatedDonor = req.body;
+
+      const donor = {
+        $set: {
+          donation: updatedDonor.donation,
+          date: updatedDonor.date,
         },
       };
       const result = await donorCollection.updateOne(filter, donor, options);
@@ -322,6 +344,7 @@ async function run() {
     app.post("/create-payment-intent", async (req, res) => {
       const { price } = req.body;
       const amount = parseInt(price * 100);
+      console.log(amount, "amount inside the intent");
 
       const paymentIntent = await stripe.paymentIntents.create({
         amount: amount,
